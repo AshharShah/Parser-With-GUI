@@ -1,4 +1,40 @@
-# Set Of Grammar Rules:
+# Parser With GUI
+This is a project in which we are to implemenet a Parser in Python along side a GUI for a basic programming language that represents a calculator.
+
+## Context Free Grammar
+
+line            → expression exit_command
+line            → line expression exit_command
+line            → exit_command
+line            → line exit_command
+line            → UserIn VAR '=' expression exit_command
+line            → Print expression exit_command
+
+expression      → term
+expression      → term '+' expression
+expression      → term '-' expression
+expression      → term UserIn
+expression      → VAR
+
+term            → factor
+term            → factor '*' term
+term            → factor '/' term
+term            → factor UserIn
+term            → VAR
+
+factor          → primary
+factor          → primary '^' factor
+factor          → primary UserIn
+factor          → VAR
+
+primary         → number
+primary         → '(' expression ')'
+
+exit_command    → EXIT
+
+***
+
+## Explaination
 
 Line:
 - An expression followed by an exit command
@@ -6,6 +42,7 @@ Line:
 - An exit command
 - A line followed by an exit command
 - User input stored in a variable followed by an expression
+- Print statements takes an expression and displays the result
 
 Expression:
 - A term
@@ -33,39 +70,3 @@ Primary:
 
 Exit Command:
 - The exit command "EXIT"
-
-***
-
-line            → expression exit_command     
-                | line expression exit_command
-                | exit_command		            
-                | line exit_command
-                | UserIn VAR '=' expression
-                ;
-
-expression      → term          
-                | term '+' expression
-                | term '-' expression
-                | term UserIn
-                | VAR                   
-                ;
-
-term            → factor    
-                | factor '*' term
-                | factor '/' term
-                | factor UserIn       
-                | VAR             
-                ;
-
-factor          → primary     
-                | primary '^' factor   
-                | primary UserIn
-                | VAR                  
-                ;
-
-primary         → number            
-                | '(' expression ')'
-                ;
-
-exit_command    → EXIT
-                ;
