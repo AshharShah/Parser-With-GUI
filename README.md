@@ -36,36 +36,36 @@ Exit Command:
 
 ***
 
-line            : expression exit_command     
+line            → expression exit_command     
                 | line expression exit_command
                 | exit_command		            
                 | line exit_command
                 | UserIn VAR '=' expression
                 ;
 
-expression      : term          
+expression      → term          
                 | term '+' expression
                 | term '-' expression
                 | term UserIn
                 | VAR                   
                 ;
 
-term            : factor    
+term            → factor    
                 | factor '*' term
                 | factor '/' term
                 | factor UserIn       
                 | VAR             
                 ;
 
-factor          : primary     
+factor          → primary     
                 | primary '^' factor   
                 | primary UserIn
                 | VAR                  
                 ;
 
-primary         : number            
+primary         → number            
                 | '(' expression ')'
                 ;
 
-exit_command    : EXIT
+exit_command    → EXIT
                 ;
