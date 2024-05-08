@@ -93,6 +93,9 @@ class Parser:
             elif self.current_token and self.current_token[0] == 'Delimiter':
                 self.match('Delimiter')
                 return ('Var', var_name)
+            else:
+                raise SyntaxError("Unexpected token: {}".format(self.current_token))
+
         else:
             raise SyntaxError("Unexpected token: {}".format(self.current_token))
 
@@ -101,12 +104,9 @@ class Parser:
         term_value = self.term()
         if self.current_token and self.current_token[0] == 'Operator':
             operator = self.current_token[1]
-            if operator in ('+', '-', '*', '/'):
+            if operator in ('+', '-'):
                 self.match('Operator')
                 return ('BinaryOp', operator, term_value, self.expression())
-            elif operator == 'UserIn':
-                self.match('Operator')
-                return ('UserInput', term_value)
         return term_value
 
     def term(self):
@@ -116,13 +116,6 @@ class Parser:
             if operator in ('*', '/'):
                 self.match('Operator')
                 return ('BinaryOp', operator, factor_value, self.term())
-            elif operator == 'UserIn':
-                self.match('Operator')
-                return ('UserInput', factor_value)
-        elif self.current_token and self.current_token[0] == 'Var':
-            var_name = self.current_token[1]
-            self.match('Var')
-            return ('Var', var_name)
         return factor_value
 
     def factor(self):
@@ -131,13 +124,6 @@ class Parser:
             if self.current_token[1] == '^':
                 self.match('Operator')
                 return ('Exponentiation', primary_value, self.factor())
-            elif self.current_token[1] == 'UserIn':
-                self.match('Operator')
-                return ('UserInput', primary_value)
-        elif self.current_token and self.current_token[0] == 'Var':
-            var_name = self.current_token[1]
-            self.match('Var')
-            return ('Var', var_name)
         return primary_value
 
 
@@ -161,7 +147,7 @@ class Parser:
 # Example usage:
 # input_string = "c = a + b ;"
 
-input_string = "c = a + b;"
+input_string = "ooga booga"
 
 
 try:

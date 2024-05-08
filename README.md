@@ -3,17 +3,15 @@ This is a project in which we are to implemenet a Parser in Python along side a 
 
 ## Context Free Grammar
 
-line            → expression exit_command
+line            → VAR = expression ;
 
-line            → line expression exit_command
+line            → VAR ;
 
 line            → exit_command
 
-line            → line exit_command
+line            → UserIn VAR '=' expression ;
 
-line            → UserIn VAR '=' expression exit_command
-
-line            → Print expression exit_command
+line            → Print expression ;
 
 ***
 
@@ -23,10 +21,6 @@ expression      → term '+' expression
 
 expression      → term '-' expression
 
-expression      → term UserIn
-
-expression      → VAR
-
 ***
 
 term            → factor
@@ -35,9 +29,6 @@ term            → factor '*' term
 
 term            → factor '/' term
 
-term            → factor UserIn
-
-term            → VAR
 
 ***
 
@@ -45,13 +36,11 @@ factor          → primary
 
 factor          → primary '^' factor
 
-factor          → primary UserIn
-
-factor          → VAR
-
 ***
 
-primary         → number
+primary         → NUMBER
+
+primary         → VAR
 
 primary         → '(' expression ')'
 
