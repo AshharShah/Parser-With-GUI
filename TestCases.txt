@@ -1,0 +1,6 @@
+TEST CASES:
+c = a + b; (okay)
+c = a + b (error, no semi colon)
+
+c = a + b / (x * y); (Follows appropriate Bodmas)
+a + b; (Error, no assignment)
