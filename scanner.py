@@ -147,7 +147,7 @@ class Parser:
 # Example usage:
 # input_string = "c = a + b ;"
 
-input_string = "ooga booga"
+input_string = "Print: x + y ;"
 
 
 try:
