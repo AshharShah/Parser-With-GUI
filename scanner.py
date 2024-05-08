@@ -1,46 +1,47 @@
 import re
 
-def tokenize(input_string):
-    # Define regex patterns for each token type
-    patterns = [
-        (r'\+', 'Operator'),
-        (r'-', 'Operator'),
-        (r'\*', 'Operator'),
-        (r'/', 'Operator'),
-        (r'\^', 'Operator'),
-        (r'=', 'Assignment'),
-        (r';', 'Delimiter'),
-        (r'User\s+In:', 'UserInput'),
-        (r'Print:', 'Print'),
-        (r'EXIT', 'ExitCommand'),
-        (r'[a-zA-Z_][a-zA-Z0-9_]*', 'Var'),
-        (r'\d+(\.\d*)?', 'Number'),
-        (r'\(', 'LeftParen'),
-        (r'\)', 'RightParen'),
-        (r'\s+', 'Whitespace')
-    ]
+class Scanner:
+    def __init__(self):
+        # Define regex patterns for each token type
+        self.patterns = [
+            (r'\+', 'Operator'),
+            (r'-', 'Operator'),
+            (r'\*', 'Operator'),
+            (r'/', 'Operator'),
+            (r'\^', 'Operator'),
+            (r'=', 'Assignment'),
+            (r';', 'Delimiter'),
+            (r'UserIn:', 'UserInput'),
+            (r'Print:', 'Prisnt'),
+            (r'EXIT', 'ExitCommand'),
+            (r'[a-zA-Z_][a-zA-Z0-9_]*', 'Var'),
+            (r'\d+(\.\d*)?', 'Number'),
+            (r'\(', 'LeftParen'),
+            (r'\)', 'RightParen'),
+            (r'\s+', 'Whitespace')
+        ]
+    
+    def tokenize(self, input_string):
+        tokens = []
+        input_string = input_string.strip()
+        line_number = 1
 
-    
-    tokens = []
-    input_string = input_string.strip()
-    line_number = 1
-    
-    while input_string:
-        match = None
-        for pattern, token_type in patterns:
-            regex_match = re.match(pattern, input_string)
-            if regex_match:
-                match = (token_type, regex_match.group(0), line_number)
-                input_string = input_string[regex_match.end():].strip()
-                if token_type == 'UserInput' or token_type == 'Print':
-                    line_number += 1
-                break
-        if not match:
-            raise ValueError("Invalid token at line {}: '{}'".format(line_number, input_string))
-        if match[1] != 'Whitespace':
-            tokens.append(match)
-    
-    return tokens
+        while input_string:
+            match = None
+            for pattern, token_type in self.patterns:
+                regex_match = re.match(pattern, input_string)
+                if regex_match:
+                    match = (token_type, regex_match.group(0), line_number)
+                    input_string = input_string[regex_match.end():].strip()
+                    if token_type == 'UserInput' or token_type == 'Print':
+                        line_number += 1
+                    break
+            if not match:
+                raise ValueError("Invalid token at line {}: '{}'".format(line_number, input_string))
+            if match[1] != 'Whitespace':
+                tokens.append(match)
+
+        return tokens
 
 class Parser:
     def __init__(self, tokens):
@@ -143,20 +144,26 @@ class Parser:
             return expr_value
         else:
             raise SyntaxError("Unexpected token: {}".format(self.current_token))
-        
-# Example usage:
-# input_string = "c = a + b ;"
 
-input_string = "Print: x / (a + b);"
 
 
 try:
-    tokens = tokenize(input_string)
+
+    input_string = input("Enter Input:")
+
+    # create a scanner object
+    scanner = Scanner()
+    tokens = scanner.tokenize(input_string)
+
+    # print contents of the tokens
     for token_type, token_value, line_number in tokens:
         print("Line:", line_number, "Token Type:", token_type, "Token Value:", token_value)
 
+    # create a parser object
     parser = Parser(tokens)
     result = parser.parse()
+
+    # print the parser result
     print("Parse Result:", result)
 
 except ValueError as e:
