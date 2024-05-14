@@ -1,4 +1,7 @@
+import tkinter as tk
+from tkinter import messagebox
 import re
+
 
 class Scanner:
     def __init__(self):
@@ -20,7 +23,7 @@ class Scanner:
             (r'\)', 'RightParen'),
             (r'\s+', 'Whitespace')
         ]
-    
+
     def tokenize(self, input_string):
         tokens = []
         input_string = input_string.strip()
@@ -37,11 +40,13 @@ class Scanner:
                         line_number += 1
                     break
             if not match:
-                raise ValueError("Invalid token at line {}: '{}'".format(line_number, input_string))
+                raise ValueError("Invalid token at line {}: '{}'".format(
+                    line_number, input_string))
             if match[1] != 'Whitespace':
                 tokens.append(match)
 
         return tokens
+
 
 class Parser:
     def __init__(self, tokens):
@@ -64,7 +69,8 @@ class Parser:
         if self.current_token and self.current_token[0] == token_type:
             self.advance()
         else:
-            raise SyntaxError("Unexpected token: {}".format(self.current_token))
+            raise SyntaxError("Unexpected token: {} at line {}".format(
+                self.current_token, self.current_token[2]))
 
     def line(self):
         if self.current_token[0] == 'UserInput':
@@ -95,11 +101,12 @@ class Parser:
                 self.match('Delimiter')
                 return ('Var', var_name)
             else:
-                raise SyntaxError("Unexpected token: {}".format(self.current_token))
+                raise SyntaxError("Unexpected token: {} at line {}".format(
+                    self.current_token, self.current_token[2]))
 
         else:
-            raise SyntaxError("Unexpected token: {}".format(self.current_token))
-
+            raise SyntaxError("Unexpected token: {} at line {}".format(
+                self.current_token, self.current_token[2]))
 
     def expression(self):
         term_value = self.term()
@@ -127,7 +134,6 @@ class Parser:
                 return ('Exponentiation', primary_value, self.factor())
         return primary_value
 
-
     def primary(self):
         if self.current_token[0] == 'Var':
             var_name = self.current_token[1]
@@ -143,29 +149,78 @@ class Parser:
             self.match('RightParen')
             return expr_value
         else:
-            raise SyntaxError("Unexpected token: {}".format(self.current_token))
+            raise SyntaxError("Unexpected token: {} at line {}".format(
+                self.current_token, self.current_token[2]))
 
 
+def check_syntax():
+    input_string = input_box.get("1.0", "end-1c")
+    scanner_output.delete("1.0", "end")
+    parser_output.delete("1.0", "end")
+    error_box.delete("1.0", "end")
+    try:
+        # Call the scanner tokenize function
+        scanner = Scanner()
+        tokens = scanner.tokenize(input_string)
+        for token in tokens:
+            scanner_output.insert(
+                "end", "Token Type: {}, Token Value: {}\n".format(token[0], token[1]))
+        scanner_output.insert("end", "Tokenization complete.\n")
+        error_box.insert("end", "Syntax check passed. No errors found.")
+    except ValueError as e:
+        error_box.insert("end", str(e))
+    except Exception as e:
+        error_box.insert("end", str(e))
 
-try:
 
-    input_string = input("Enter Input:")
+def execute():
+    input_string = input_box.get("1.0", "end-1c")
+    scanner_output.delete("1.0", "end")
+    parser_output.delete("1.0", "end")
+    error_box.delete("1.0", "end")
+    try:
+        # Call the scanner and parser functions
+        scanner = Scanner()
+        tokens = scanner.tokenize(input_string)
+        parser = Parser(tokens)
+        result = parser.parse()
+        parser_output.insert("end", "Parse Result: {}".format(result))
+    except Exception as e:
+        error_box.insert("end", str(e))
 
-    # create a scanner object
-    scanner = Scanner()
-    tokens = scanner.tokenize(input_string)
 
-    # print contents of the tokens
-    for token_type, token_value, line_number in tokens:
-        print("Line:", line_number, "Token Type:", token_type, "Token Value:", token_value)
+# GUI Setup
+root = tk.Tk()
+root.title("Parser and Scanner GUI")
 
-    # create a parser object
-    parser = Parser(tokens)
-    result = parser.parse()
+# Input Box
+input_label = tk.Label(root, text="Input String:")
+input_label.grid(row=0, column=0, sticky="w")
+input_box = tk.Text(root, height=4, width=50)
+input_box.grid(row=0, column=1, columnspan=2)
 
-    # print the parser result
-    print("Parse Result:", result)
+# Output Boxes
+scanner_output_label = tk.Label(root, text="Scanner Output:")
+scanner_output_label.grid(row=1, column=0, sticky="w")
+scanner_output = tk.Text(root, height=10, width=50)
+scanner_output.grid(row=1, column=1, columnspan=2)
 
-except ValueError as e:
-    print("Error:", e)
+parser_output_label = tk.Label(root, text="Parser Output:")
+parser_output_label.grid(row=2, column=0, sticky="w")
+parser_output = tk.Text(root, height=4, width=50)
+parser_output.grid(row=2, column=1, columnspan=2)
 
+error_label = tk.Label(root, text="Errors:")
+error_label.grid(row=3, column=0, sticky="w")
+error_box = tk.Text(root, height=4, width=50)
+error_box.grid(row=3, column=1, columnspan=2)
+
+# Buttons
+check_syntax_button = tk.Button(
+    root, text="Check Syntax", command=check_syntax)
+check_syntax_button.grid(row=4, column=1)
+
+execute_button = tk.Button(root, text="Execute", command=execute)
+execute_button.grid(row=4, column=2)
+
+root.mainloop()
